@@ -13,7 +13,6 @@ def index(request):
         }
 
         return Response(people_details)
-    
     elif request.method == "POST":
         return Response("POST")
     
