@@ -38,3 +38,27 @@ def person(request):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
+    elif request.method == "PUT":
+        data = request.data
+        obj = Person.objects.get(id = data['id'])
+        serializer = PersonSerializer(obj, data = data, partial = False)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+    elif request.method == "PATCH":
+        data = request.datas
+        obj = Person.objects.get(id = data['id'])
+        serializer = PersonSerializer(obj, data = data, partial = True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+    else:
+        data = request.data
+        obj = Person.objects.get(id = data['id'])
+        obj.delete()
+        return Response({'message': 'person deleted'})
+
+
+    
