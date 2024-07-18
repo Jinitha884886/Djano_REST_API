@@ -3,3 +3,4 @@ from home import models
 
 # Register your models here.
 admin.site.register(models.Person)
+admin.site.register(models.Team)
