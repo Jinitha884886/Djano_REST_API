@@ -7,7 +7,7 @@ class TeamSerializer(serializers.ModelSerializer):    #this class created for on
         fields = ['team_name']
 
 class PersonSerializer(serializers.ModelSerializer):
-    team = TeamSerializer()
+    team = TeamSerializer(read_only = True)
     team_info = serializers.SerializerMethodField()     # This for creating "tram_info" new field using serializer (not in the model)
 
     class Meta:
