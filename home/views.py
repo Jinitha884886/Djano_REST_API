@@ -1,10 +1,17 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from home.models import Person
-from home.serializer import PersonSerializer
+from home.serializer import PersonSerializer, LoginSerializer, RegisterSerializer
+
 from rest_framework.views import APIView
+from rest_framework import viewsets
 
 
+from rest_framework import status
+from django.contrib.auth import authenticate
+from rest_framework.authtoken.models import Token
+
+# Function based View
 # www.  /api/index
 @api_view(["GET", "POST", "PUT"])
 def index(request):
@@ -112,4 +119,54 @@ class  PersonClassView(APIView):
         obj.delete()
         return Response({'message': 'person deleted'})
 
+#///////////////////////////////////////////////////////////////////////
 
+# "View Set" is used to perform CRUD operations on Models
+
+class PersonViewSets(viewsets.ModelViewSet):
+    serializer_class = PersonSerializer         # "serializer_class" is permanent variable name
+    queryset = Person.objects.all()
+
+# ///////////////////////////////////////////////////////////////////////////
+
+# queryparam(For searching)                                         URL/api/person/?search=ath
+    def list(self, request):
+        search = request.GET.get("search")
+        queryset = self.queryset
+
+        if search:
+            queryset =queryset.filter(name__startswith = search)    #start with
+
+        serializer = PersonSerializer(queryset, many =True)
+        return Response({"status":200, "data": serializer.data})
+    
+    #////////////////////////////////////////////////////////////////////////////////////////////////
+
+    #  Token Authentication
+
+class RegisterAPI(APIView):
+        def post(self, request):
+            _data = request.data
+            serializer = RegisterSerializer(data = _data)
+
+            if not serializer.is_valid():
+                return Response({'message': serializer.errors}, status=status.HTTP_404_NOT_FOUND)
+            
+            serializer.save()
+
+            return Response({"message": "User Created"}, status=status.HTTP_201_CREATED)
+        
+class LoginAPI(APIView):
+        def post(self, request):
+            _data = request.data
+            serializer = LoginSerializer(data = _data)
+
+            if not serializer.is_valid():
+                return Response({"message": serializer.errors}, status=status.HTTP_404_NOT_FOUND)
+
+            user =authenticate(username= serializer.data['username'], password=serializer.data['password'])
+
+            if not user:
+                return Response({'message': "Invalid"}, status=status.HTTP_404_NOT_FOUND)
+            token, _ =Token.objects.get_or_create(user=user)
+            return Response({"message": "Login Successfilly", "token": str(token)}, status=status.HTTP_200_OK)
