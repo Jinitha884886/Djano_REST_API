@@ -127,10 +127,10 @@ class  PersonClassView(APIView):
 
 #///////////////////////////////////////////////////////////////////////
 
-# Pagination => PageNumberPagination
+# Pagination => PageNumberPagination                        other paginations are 1. LimitOfFsetPagination   2. CustomPagination  etc
 
 class CustomPagination(PageNumberPagination):
-    page_size = 2                                          # default 100 in settinfs.py
+    page_size = 2                                          # default 100 in settings.py
     page_size_query_param = "page"                          # "page" is Query param (URL)
 
 
@@ -167,10 +167,10 @@ class PersonViewSets(viewsets.ModelViewSet):
     
     #////////////////////////////////////////////////////////////////////////////////////////////////
 
-    # Authentication => TokenAuthentication
-
-class RegisterAPI(APIView):
-        def post(self, request):
+    # Authentication => TokenAuthentication                                    other authentications are  1. Session Authentication  2. Basic Authentication etc
+                                                                                                   #       3. RemoteUser Authentication
+class RegisterAPI(APIView):                                                                          
+        def post(self, request):                                                                        
             _data = request.data
             serializer = RegisterSerializer(data = _data)
 

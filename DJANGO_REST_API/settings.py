@@ -147,5 +147,5 @@ REST_FRAMEWORK = {
 # Pagination (PageNumber Pagination)
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 100    #Number of Items per page
+    'PAGE_SIZE': 100    #Number of Items per page defult
 }

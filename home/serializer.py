@@ -3,7 +3,7 @@ from home.models import Person, Team
 
 from django.contrib.auth.models import User
 
-class TeamSerializer(serializers.ModelSerializer):    #this class created for only showing "team_name" fields insted of all filed in the "Team" table(Suppos more fields presented)
+class TeamSerializer(serializers.ModelSerializer):    #this class created for only showing "team_name" fields insted of all filed in the model "Team", table(Suppos more fields presented)
     class Meta:
         model = Team
         fields = ['team_name']
@@ -47,5 +47,4 @@ class RegisterSerializer(serializers.Serializer):
     
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
-    
     password = serializers.CharField()
