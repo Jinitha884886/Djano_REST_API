@@ -13,6 +13,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import TokenAuthentication
 
+from rest_framework.pagination import PageNumberPagination
+
 # Function based View
 # www.  /api/index
 @api_view(["GET", "POST", "PUT"])
@@ -125,11 +127,22 @@ class  PersonClassView(APIView):
 
 #///////////////////////////////////////////////////////////////////////
 
+# Pagination => PageNumberPagination
+
+class CustomPagination(PageNumberPagination):
+    page_size = 2                                          # default 100 in settinfs.py
+    page_size_query_param = "page"                          # "page" is Query param (URL)
+
+
+# ////////////////////////////////////////////////////////////////////////
+
 # "View Set" is used to perform CRUD operations on Models
 
 class PersonViewSets(viewsets.ModelViewSet):
-    serializer_class = PersonSerializer         # "serializer_class" is permanent variable name
+    permission_classes = [AllowAny]
+    serializer_class = PersonSerializer         # "serializer_class" is permanent or inbuilt variable name
     queryset = Person.objects.all()
+    pagination_class = CustomPagination         # "pagination_class" inbuilt varibale name
 
 # ///////////////////////////////////////////////////////////////////////////
 
@@ -141,12 +154,20 @@ class PersonViewSets(viewsets.ModelViewSet):
         if search:
             queryset =queryset.filter(name__startswith = search)    #start with
 
-        serializer = PersonSerializer(queryset, many =True)
-        return Response({"status":200, "data": serializer.data})
+        # paginate the query
+        paginated_queryset = self.paginate_queryset(queryset)
+
+        # serializer the paginated queryset
+        #serializer = PersonSerializer(queryset, many =True)
+        serializer = PersonSerializer(paginated_queryset, many =True)
+
+        # return the pagination responce
+        #return Response({"status":200, "data": serializer.data})
+        return self.get_paginated_response({'status':200, 'data': serializer.data})
     
     #////////////////////////////////////////////////////////////////////////////////////////////////
 
-    #  Token Authentication
+    # Authentication => TokenAuthentication
 
 class RegisterAPI(APIView):
         def post(self, request):
@@ -178,4 +199,8 @@ class LoginAPI(APIView):
     
 # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-# Permissions
+#permission (Applied on "PersonClassView" )
+
+# ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+# Pagination => PageNumberPagination
