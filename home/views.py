@@ -6,10 +6,12 @@ from home.serializer import PersonSerializer, LoginSerializer, RegisterSerialize
 from rest_framework.views import APIView
 from rest_framework import viewsets
 
-
 from rest_framework import status
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
+
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.authentication import TokenAuthentication
 
 # Function based View
 # www.  /api/index
@@ -71,7 +73,7 @@ def person(request):
         return Response({'message': 'person deleted'})
 
 #/////////////////////////////////////////////////////////////////////
-# class Based view using ApiView
+# class Based view using "ApiView"
 
 # api/classperson/
 class Classperson(APIView):
@@ -82,6 +84,8 @@ class Classperson(APIView):
 
 # api/personclassview/
 class  PersonClassView(APIView):
+    permission_classes = [IsAuthenticated]                           # "permission_classes" is inbuilt variable name
+    authentication_classes = [TokenAuthentication]                   #  "authentication_classes" is inbuilt variable name
     def get (self, request):
         objPerson = Person.objects.all()
         serializer = PersonSerializer(objPerson, many= True)
@@ -157,6 +161,7 @@ class RegisterAPI(APIView):
             return Response({"message": "User Created"}, status=status.HTTP_201_CREATED)
         
 class LoginAPI(APIView):
+        permission_classes = [AllowAny]  
         def post(self, request):
             _data = request.data
             serializer = LoginSerializer(data = _data)
@@ -170,3 +175,7 @@ class LoginAPI(APIView):
                 return Response({'message': "Invalid"}, status=status.HTTP_404_NOT_FOUND)
             token, _ =Token.objects.get_or_create(user=user)
             return Response({"message": "Login Successfilly", "token": str(token)}, status=status.HTTP_200_OK)
+    
+# ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+# Permissions
